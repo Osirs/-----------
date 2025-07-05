@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信视频号数据监控平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 粘性头部导航 -->
+    <div class="header">
+        <div class="container">
+            <h1>微信视频号数据监控平台</h1>
+            <div class="header-nav">
+                <div class="nav-item active" onclick="showSection('dashboard')">核心数据仪表盘</div>
+                <div class="nav-item" onclick="showSection('accounts')">账号数据统计</div>
+                <div class="nav-item" onclick="showSection('videos')">视频数据统计</div>
+                <div class="nav-item" onclick="showSection('settings')">系统设置</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 核心数据仪表盘 -->
+        <div id="dashboard" class="content-section active">
+            <!-- 过滤器 -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label>时间范围:</label>
+                    <select id="timeRange" onchange="updateData()">
+                        <option value="today">今日</option>
+                        <option value="week">本周</option>
+                        <option value="month" selected>本月</option>
+                        <option value="quarter">本季度</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>对比时间:</label>
+                    <select id="compareTime">
+                        <option value="none">无对比</option>
+                        <option value="lastPeriod" selected>上期</option>
+                        <option value="lastYear">去年同期</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>部门:</label>
+                    <select id="department">
+                        <option value="all" selected>全部部门</option>
+                        <option value="marketing">市场部</option>
+                        <option value="sales">销售部</option>
+                        <option value="product">产品部</option>
+                    </select>
+                </div>
+                <div class="realtime-indicator"></div>
+            </div>
+            
+            <!-- 三栏布局 -->
+            <div class="layout-grid">
+                <!-- 左侧信息面板 (25%) -->
+                <div class="left-panel">
+                    <!-- 关键指标卡片 -->
+                    <div class="data-card">
+                        <div class="card-title">发表作者数</div>
+                        <div class="metric-value">1,234</div>
+                        <div class="metric-label">
+                            今日新增
+                            <span class="trend-indicator trend-up">12.5%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-title">发表量</div>
+                        <div class="metric-value">15,678</div>
+                        <div class="metric-label">
+                            较昨日
+                            <span class="trend-indicator trend-up">8.3%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-title">粉丝量</div>
+                        <div class="metric-value">2.3M</div>
+                        <div class="metric-label">
+                            增长率
+                            <span class="trend-indicator trend-up">5.2%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 全国播放量TOP10 -->
+                    <div class="data-card">
+                        <div class="card-title">全国播放量TOP10</div>
+                        <div class="ranking-list">
+                            <div class="ranking-item">
+                                <div class="ranking-number top-3">1</div>
+                                <div class="rank-info">
+                                    <div class="rank-name">张三</div>
+                                    <div class="rank-team">华北事业部</div>
+                                </div>
+                                <div class="rank-value">1.2M</div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="ranking-number top-3">2</div>
+                                <div class="rank-info">
+                                    <div class="rank-name">李四</div>
+                                    <div class="rank-team">华南事业部</div>
+                                </div>
+                                <div class="rank-value">980K</div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="ranking-number top-3">3</div>
+                                <div class="rank-info">
+                                    <div class="rank-name">王五</div>
+                                    <div class="rank-team">华东事业部</div>
+                                </div>
+                                <div class="rank-value">856K</div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="ranking-number">4</div>
+                                <div class="rank-info">
+                                    <div class="rank-name">赵六</div>
+                                    <div class="rank-team">西南事业部</div>
+                                </div>
+                                <div class="rank-value">743K</div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="ranking-number">5</div>
+                                <div class="rank-info">
+                                    <div class="rank-name">钱七</div>
+                                    <div class="rank-team">华北事业部</div>
+                                </div>
+                                <div class="rank-value">692K</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 中间可视化区域 (50%) -->
+                <div class="middle-panel">
+                    <!-- 主要指标 -->
+                    <div class="stats-grid">
+                        <div class="data-card">
+                            <div class="card-title">播放量</div>
+                            <div class="metric-value">45.6M</div>
+                            <div class="metric-label">
+                                较昨日
+                                <span class="trend-indicator trend-down">2.1%</span>
+                            </div>
+                        </div>
+                        <div class="data-card">
+                            <div class="card-title">评论量</div>
+                            <div class="metric-value">123K</div>
+                            <div class="metric-label">
+                                较昨日
+                                <span class="trend-indicator trend-up">15.7%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 数据趋势图表 -->
+                    <div class="chart-container">
+                        <div class="chart-title">
+                            播放量趋势
+                            <div class="realtime-indicator"></div>
+                        </div>
+                        <div id="playTrendChart" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title">发表量趋势</div>
+                        <div id="postTrendChart" style="width: 100%; height: 300px;"></div>
+                    </div>
+                </div>
+                
+                <!-- 右侧配置面板 (25%) -->
+                <div class="right-panel">
+                    <!-- 部门累计播放量 -->
+                    <div class="data-card">
+                        <div class="card-title">部门累计播放量</div>
+                        <div class="ranking-list">
+                            <div class="ranking-item">
+                                <div class="ranking-number top-3">1</div>
+                                <div class="rank-info">
+                                    <div class="rank-name">华北事业部</div>
+                                </div>
+                                <div class="rank-value">12.5M</div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="ranking-number top-3">2</div>
+                                <div class="rank-info">
+                                    <div class="rank-name">华南事业部</div>
+                                </div>
+                                <div class="rank-value">10.8M</div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="ranking-number top-3">3</div>
+                                <div class="rank-info">
+                                    <div class="rank-name">华东事业部</div>
+                                </div>
+                                <div class="rank-value">9.2M</div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="ranking-number">4</div>
+                                <div class="rank-info">
+                                    <div class="rank-name">西南事业部</div>
+                                </div>
+                                <div class="rank-value">7.6M</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 实时数据 -->
+                    <div class="data-card">
+                        <div class="card-title">实时数据</div>
+                        <div class="metric-value">89K</div>
+                        <div class="metric-label">
+                            分享量
+                            <span class="trend-indicator trend-up">7.8%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 快速操作 -->
+                    <div class="data-card">
+                        <div class="card-title">快速操作</div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button class="btn" onclick="exportData()">导出数据</button>
+                            <button class="btn" onclick="refreshData()">刷新数据</button>
+                            <button class="btn" onclick="generateReport()">生成报告</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 账号数据统计 -->
+        <div id="accounts" class="content-section">
+            <div class="filters">
+                <div class="filter-group">
+                    <label>时间范围:</label>
+                    <select>
+                        <option>本月</option>
+                        <option>本季度</option>
+                        <option>本年</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>搜索:</label>
+                    <input type="text" placeholder="搜索账号名称">
+                </div>
+            </div>
+            
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">账号名称</th>
+                            <th onclick="sortTable(1)">团队</th>
+                            <th onclick="sortTable(2)">员工</th>
+                            <th onclick="sortTable(3)">粉丝数</th>
+                            <th onclick="sortTable(4)">发表量</th>
+                            <th onclick="sortTable(5)">播放量</th>
+                            <th onclick="sortTable(6)">互动率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>张三的视频号</td>
+                            <td>华北事业部</td>
+                            <td>张三</td>
+                            <td>125,678</td>
+                            <td>45</td>
+                            <td>2,345,678</td>
+                            <td>8.5%</td>
+                        </tr>
+                        <tr>
+                            <td>李四说保险</td>
+                            <td>华南事业部</td>
+                            <td>李四</td>
+                            <td>98,432</td>
+                            <td>38</td>
+                            <td>1,876,543</td>
+                            <td>7.2%</td>
+                        </tr>
+                        <tr>
+                            <td>王五财经</td>
+                            <td>华东事业部</td>
+                            <td>王五</td>
+                            <td>156,789</td>
+                            <td>52</td>
+                            <td>3,123,456</td>
+                            <td>9.1%</td>
+                        </tr>
+                        <tr>
+                            <td>赵六理财</td>
+                            <td>西南事业部</td>
+                            <td>赵六</td>
+                            <td>89,234</td>
+                            <td>29</td>
+                            <td>1,567,890</td>
+                            <td>6.8%</td>
+                        </tr>
+                        <tr>
+                            <td>钱七投资</td>
+                            <td>华中事业部</td>
+                            <td>钱七</td>
+                            <td>203,456</td>
+                            <td>67</td>
+                            <td>4,234,567</td>
+                            <td>10.2%</td>
+                        </tr>
+                        <tr>
+                            <td>孙八金融</td>
+                            <td>东北事业部</td>
+                            <td>孙八</td>
+                            <td>76,543</td>
+                            <td>34</td>
+                            <td>1,234,567</td>
+                            <td>5.9%</td>
+                        </tr>
+                        <tr>
+                            <td>周九保险</td>
+                            <td>西北事业部</td>
+                            <td>周九</td>
+                            <td>134,567</td>
+                            <td>48</td>
+                            <td>2,789,012</td>
+                            <td>8.7%</td>
+                        </tr>
+                        <tr>
+                            <td>吴十理财</td>
+                            <td>华南事业部</td>
+                            <td>吴十</td>
+                            <td>112,890</td>
+                            <td>41</td>
+                            <td>2,123,456</td>
+                            <td>7.5%</td>
+                        </tr>
+                        <tr>
+                            <td>郑十一投资</td>
+                            <td>华北事业部</td>
+                            <td>郑十一</td>
+                            <td>167,234</td>
+                            <td>55</td>
+                            <td>3,456,789</td>
+                            <td>9.3%</td>
+                        </tr>
+                        <tr>
+                            <td>王十二金融</td>
+                            <td>华东事业部</td>
+                            <td>王十二</td>
+                            <td>95,678</td>
+                            <td>36</td>
+                            <td>1,789,123</td>
+                            <td>6.4%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 视频数据统计 -->
+        <div id="videos" class="content-section">
+            <div class="filters">
+                <div class="filter-group">
+                    <label>发布时间:</label>
+                    <select>
+                        <option>最近7天</option>
+                        <option>最近30天</option>
+                        <option>最近90天</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>播放量:</label>
+                    <select>
+                        <option>全部</option>
+                        <option>>10万</option>
+                        <option>>50万</option>
+                        <option>>100万</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">作者</th>
+                            <th onclick="sortTable(1)">团队</th>
+                            <th onclick="sortTable(2)">员工</th>
+                            <th onclick="sortTable(3)">发布时间</th>
+                            <th onclick="sortTable(4)">完播率</th>
+                            <th onclick="sortTable(5)">平均播放时长</th>
+                            <th onclick="sortTable(6)">播放量</th>
+                            <th onclick="sortTable(7)">推荐量</th>
+                            <th onclick="sortTable(8)">点赞</th>
+                            <th onclick="sortTable(9)">评论</th>
+                            <th onclick="sortTable(10)">分享</th>
+                            <th onclick="sortTable(11)">关注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>张三</td>
+                            <td>华北事业部</td>
+                            <td>张三</td>
+                            <td>2024-01-15</td>
+                            <td>65%</td>
+                            <td>45s</td>
+                            <td>1,234,567</td>
+                            <td>2,345,678</td>
+                            <td>12,345</td>
+                            <td>1,234</td>
+                            <td>567</td>
+                            <td>234</td>
+                        </tr>
+                        <tr>
+                            <td>李四</td>
+                            <td>华南事业部</td>
+                            <td>李四</td>
+                            <td>2024-01-14</td>
+                            <td>72%</td>
+                            <td>52s</td>
+                            <td>987,654</td>
+                            <td>1,876,543</td>
+                            <td>9,876</td>
+                            <td>987</td>
+                            <td>432</td>
+                            <td>198</td>
+                        </tr>
+                        <tr>
+                            <td>王五</td>
+                            <td>华东事业部</td>
+                            <td>王五</td>
+                            <td>2024-01-13</td>
+                            <td>78%</td>
+                            <td>68s</td>
+                            <td>1,567,890</td>
+                            <td>2,789,123</td>
+                            <td>15,678</td>
+                            <td>1,567</td>
+                            <td>789</td>
+                            <td>345</td>
+                        </tr>
+                        <tr>
+                            <td>赵六</td>
+                            <td>西南事业部</td>
+                            <td>赵六</td>
+                            <td>2024-01-12</td>
+                            <td>58%</td>
+                            <td>38s</td>
+                            <td>756,432</td>
+                            <td>1,234,567</td>
+                            <td>7,564</td>
+                            <td>756</td>
+                            <td>321</td>
+                            <td>156</td>
+                        </tr>
+                        <tr>
+                            <td>钱七</td>
+                            <td>华中事业部</td>
+                            <td>钱七</td>
+                            <td>2024-01-11</td>
+                            <td>83%</td>
+                            <td>75s</td>
+                            <td>2,345,678</td>
+                            <td>3,456,789</td>
+                            <td>23,456</td>
+                            <td>2,345</td>
+                            <td>1,234</td>
+                            <td>567</td>
+                        </tr>
+                        <tr>
+                            <td>孙八</td>
+                            <td>东北事业部</td>
+                            <td>孙八</td>
+                            <td>2024-01-10</td>
+                            <td>61%</td>
+                            <td>42s</td>
+                            <td>654,321</td>
+                            <td>1,098,765</td>
+                            <td>6,543</td>
+                            <td>654</td>
+                            <td>287</td>
+                            <td>123</td>
+                        </tr>
+                        <tr>
+                            <td>周九</td>
+                            <td>西北事业部</td>
+                            <td>周九</td>
+                            <td>2024-01-09</td>
+                            <td>69%</td>
+                            <td>55s</td>
+                            <td>1,123,456</td>
+                            <td>1,987,654</td>
+                            <td>11,234</td>
+                            <td>1,123</td>
+                            <td>567</td>
+                            <td>234</td>
+                        </tr>
+                        <tr>
+                            <td>吴十</td>
+                            <td>华南事业部</td>
+                            <td>吴十</td>
+                            <td>2024-01-08</td>
+                            <td>74%</td>
+                            <td>63s</td>
+                            <td>1,789,012</td>
+                            <td>2,567,890</td>
+                            <td>17,890</td>
+                            <td>1,789</td>
+                            <td>890</td>
+                            <td>456</td>
+                        </tr>
+                        <tr>
+                            <td>郑十一</td>
+                            <td>华北事业部</td>
+                            <td>郑十一</td>
+                            <td>2024-01-07</td>
+                            <td>67%</td>
+                            <td>48s</td>
+                            <td>1,345,678</td>
+                            <td>2,123,456</td>
+                            <td>13,456</td>
+                            <td>1,345</td>
+                            <td>678</td>
+                            <td>289</td>
+                        </tr>
+                        <tr>
+                            <td>王十二</td>
+                            <td>华东事业部</td>
+                            <td>王十二</td>
+                            <td>2024-01-06</td>
+                            <td>76%</td>
+                            <td>59s</td>
+                            <td>1,456,789</td>
+                            <td>2,234,567</td>
+                            <td>14,567</td>
+                            <td>1,456</td>
+                            <td>734</td>
+                            <td>367</td>
+                        </tr>
+                        <tr>
+                            <td>冯十三</td>
+                            <td>华中事业部</td>
+                            <td>冯十三</td>
+                            <td>2024-01-05</td>
+                            <td>71%</td>
+                            <td>51s</td>
+                            <td>1,098,765</td>
+                            <td>1,765,432</td>
+                            <td>10,987</td>
+                            <td>1,098</td>
+                            <td>543</td>
+                            <td>221</td>
+                        </tr>
+                        <tr>
+                            <td>陈十四</td>
+                            <td>西南事业部</td>
+                            <td>陈十四</td>
+                            <td>2024-01-04</td>
+                            <td>64%</td>
+                            <td>44s</td>
+                            <td>876,543</td>
+                            <td>1,432,109</td>
+                            <td>8,765</td>
+                            <td>876</td>
+                            <td>432</td>
+                            <td>187</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 系统设置 -->
+        <div id="settings" class="content-section">
+            <div class="layout-grid">
+                <div class="left-panel">
+                    <div class="data-card">
+                        <div class="card-title">账号管理</div>
+                        <p>管理视频号账号信息和权限设置</p>
+                        <div class="setting-options">
+                            <div class="setting-item">
+                                <span>已绑定账号:</span>
+                                <span class="setting-value">23个</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>待审核账号:</span>
+                                <span class="setting-value">3个</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>同步状态:</span>
+                                <span class="setting-value status-active">正常</span>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" onclick="addAccount()">添加账号</button>
+                            <button class="btn btn-secondary" onclick="syncAccounts()">同步账号</button>
+                        </div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-title">团队配置</div>
+                        <p>配置团队结构和成员关系</p>
+                        <div class="setting-options">
+                            <div class="setting-item">
+                                <span>事业部数量:</span>
+                                <span class="setting-value">8个</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>团队成员:</span>
+                                <span class="setting-value">156人</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>活跃成员:</span>
+                                <span class="setting-value">142人</span>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" onclick="manageTeams()">管理团队</button>
+                            <button class="btn btn-secondary" onclick="addMember()">添加成员</button>
+                        </div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-title">API配置</div>
+                        <p>配置微信API接口和访问密钥</p>
+                        <div class="setting-options">
+                            <div class="setting-item">
+                                <span>API状态:</span>
+                                <span class="setting-value status-active">已连接</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>调用次数:</span>
+                                <span class="setting-value">12,456次/日</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>剩余配额:</span>
+                                <span class="setting-value">87,544次</span>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" onclick="configAPI()">配置API</button>
+                            <button class="btn btn-secondary" onclick="testConnection()">测试连接</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="middle-panel">
+                    <div class="data-card">
+                        <div class="card-title">数据同步</div>
+                        <p>设置数据同步频率和范围</p>
+                        <div class="setting-options">
+                            <div class="setting-item">
+                                <span>同步频率:</span>
+                                <select class="setting-select">
+                                    <option value="5">每5分钟</option>
+                                    <option value="15" selected>每15分钟</option>
+                                    <option value="30">每30分钟</option>
+                                    <option value="60">每小时</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <span>数据范围:</span>
+                                <select class="setting-select">
+                                    <option value="all" selected>全部数据</option>
+                                    <option value="recent">近期数据</option>
+                                    <option value="custom">自定义</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <span>上次同步:</span>
+                                <span class="setting-value">2分钟前</span>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" onclick="syncNow()">立即同步</button>
+                            <button class="btn btn-secondary" onclick="scheduledSync()">定时设置</button>
+                        </div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-title">报告配置</div>
+                        <p>自定义报告模板和发送设置</p>
+                        <div class="setting-options">
+                            <div class="setting-item">
+                                <span>报告类型:</span>
+                                <select class="setting-select">
+                                    <option value="daily" selected>日报</option>
+                                    <option value="weekly">周报</option>
+                                    <option value="monthly">月报</option>
+                                    <option value="custom">自定义</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <span>发送时间:</span>
+                                <input type="time" class="setting-input" value="09:00">
+                            </div>
+                            <div class="setting-item">
+                                <span>接收人数:</span>
+                                <span class="setting-value">12人</span>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" onclick="configReport()">配置报告</button>
+                            <button class="btn btn-secondary" onclick="previewReport()">预览报告</button>
+                        </div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-title">数据备份</div>
+                        <p>设置数据备份策略和恢复选项</p>
+                        <div class="setting-options">
+                            <div class="setting-item">
+                                <span>备份频率:</span>
+                                <select class="setting-select">
+                                    <option value="daily" selected>每日备份</option>
+                                    <option value="weekly">每周备份</option>
+                                    <option value="monthly">每月备份</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <span>保留时间:</span>
+                                <select class="setting-select">
+                                    <option value="30">30天</option>
+                                    <option value="90" selected>90天</option>
+                                    <option value="365">1年</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <span>上次备份:</span>
+                                <span class="setting-value">昨天 23:30</span>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" onclick="backupNow()">立即备份</button>
+                            <button class="btn btn-secondary" onclick="restoreData()">数据恢复</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="right-panel">
+                    <div class="data-card">
+                        <div class="card-title">关键词管理</div>
+                        <p>管理监控关键词和标签</p>
+                        <div class="setting-options">
+                            <div class="setting-item">
+                                <span>监控关键词:</span>
+                                <span class="setting-value">45个</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>热门标签:</span>
+                                <span class="setting-value">23个</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>敏感词库:</span>
+                                <span class="setting-value">156个</span>
+                            </div>
+                        </div>
+                        <div class="keyword-list">
+                            <div class="keyword-tag">保险</div>
+                            <div class="keyword-tag">理财</div>
+                            <div class="keyword-tag">投资</div>
+                            <div class="keyword-tag">金融</div>
+                            <div class="keyword-tag">+41</div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" onclick="manageKeywords()">管理关键词</button>
+                            <button class="btn btn-secondary" onclick="addKeyword()">添加关键词</button>
+                        </div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-title">权限控制</div>
+                        <p>设置用户权限和访问控制</p>
+                        <div class="setting-options">
+                            <div class="setting-item">
+                                <span>管理员:</span>
+                                <span class="setting-value">3人</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>普通用户:</span>
+                                <span class="setting-value">25人</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>只读用户:</span>
+                                <span class="setting-value">8人</span>
+                            </div>
+                        </div>
+                        <div class="permission-list">
+                            <div class="permission-item">
+                                <span>数据查看</span>
+                                <span class="permission-status enabled">✓</span>
+                            </div>
+                            <div class="permission-item">
+                                <span>数据导出</span>
+                                <span class="permission-status enabled">✓</span>
+                            </div>
+                            <div class="permission-item">
+                                <span>系统设置</span>
+                                <span class="permission-status disabled">✗</span>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" onclick="managePermissions()">权限设置</button>
+                            <button class="btn btn-secondary" onclick="addUser()">添加用户</button>
+                        </div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-title">系统监控</div>
+                        <p>监控系统运行状态和性能指标</p>
+                        <div class="setting-options">
+                            <div class="setting-item">
+                                <span>系统状态:</span>
+                                <span class="setting-value status-active">运行正常</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>CPU使用率:</span>
+                                <span class="setting-value">23%</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>内存使用:</span>
+                                <span class="setting-value">1.2GB/4GB</span>
+                            </div>
+                            <div class="setting-item">
+                                <span>磁盘空间:</span>
+                                <span class="setting-value">45GB/100GB</span>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" onclick="viewLogs()">查看日志</button>
+                            <button class="btn btn-secondary" onclick="systemDiagnosis()">系统诊断</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态对话框 -->
+    <div id="modal-overlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">标题</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- 动态内容 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" id="modal-confirm" onclick="confirmModal()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentModalAction = null;
+        let currentEditId = null;
+        
+        // 导航切换
+        function showSection(sectionId) {
+            // 隐藏所有内容区域
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // 显示选中的内容区域
+            document.getElementById(sectionId).classList.add('active');
+            
+            // 更新导航状态
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        // 模态对话框功能
+        function showModal(title, content, action = null) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = content;
+            document.getElementById('modal-overlay').style.display = 'flex';
+            currentModalAction = action;
+        }
+        
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+            currentModalAction = null;
+            currentEditId = null;
+        }
+        
+        function confirmModal() {
+            if (currentModalAction) {
+                currentModalAction();
+            }
+            closeModal();
+        }
+        
+        // 表格排序
+        function sortTable(columnIndex) {
+            showModal('排序设置', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>排序列：</span>
+                        <span class="setting-value">第${columnIndex}列</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>排序方式：</span>
+                        <select class="setting-select" id="sort-order">
+                            <option value="asc">升序</option>
+                            <option value="desc">降序</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const order = document.getElementById('sort-order').value;
+                alert(`已按第${columnIndex}列${order === 'asc' ? '升序' : '降序'}排序`);
+            });
+        }
+        
+        // 数据更新
+        function updateData() {
+            showModal('数据更新', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>更新范围：</span>
+                        <select class="setting-select" id="update-scope">
+                            <option value="all">全部数据</option>
+                            <option value="recent">最近数据</option>
+                            <option value="selected">选中数据</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>更新频率：</span>
+                        <select class="setting-select" id="update-frequency">
+                            <option value="realtime">实时</option>
+                            <option value="5min">5分钟</option>
+                            <option value="15min">15分钟</option>
+                            <option value="1hour">1小时</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const scope = document.getElementById('update-scope').value;
+                const frequency = document.getElementById('update-frequency').value;
+                alert(`数据更新设置已保存：范围-${scope}，频率-${frequency}`);
+            });
+        }
+        
+        // 导出数据
+        function exportData() {
+            showModal('导出数据', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>导出格式：</span>
+                        <select class="setting-select" id="export-format">
+                            <option value="excel">Excel (.xlsx)</option>
+                            <option value="csv">CSV (.csv)</option>
+                            <option value="pdf">PDF (.pdf)</option>
+                            <option value="json">JSON (.json)</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>时间范围：</span>
+                        <select class="setting-select" id="export-range">
+                            <option value="today">今天</option>
+                            <option value="week">最近7天</option>
+                            <option value="month">最近30天</option>
+                            <option value="quarter">最近3个月</option>
+                            <option value="custom">自定义</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>包含字段：</span>
+                        <select class="setting-select" id="export-fields">
+                            <option value="all">全部字段</option>
+                            <option value="basic">基础字段</option>
+                            <option value="custom">自定义字段</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const format = document.getElementById('export-format').value;
+                const range = document.getElementById('export-range').value;
+                const fields = document.getElementById('export-fields').value;
+                alert(`正在导出数据：格式-${format}，范围-${range}，字段-${fields}`);
+            });
+        }
+        
+        // 刷新数据
+        function refreshData() {
+            showModal('刷新数据', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>刷新类型：</span>
+                        <select class="setting-select" id="refresh-type">
+                            <option value="all">全部数据</option>
+                            <option value="account">账号数据</option>
+                            <option value="video">视频数据</option>
+                            <option value="analytics">分析数据</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>是否清除缓存：</span>
+                        <select class="setting-select" id="clear-cache">
+                            <option value="no">否</option>
+                            <option value="yes">是</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const type = document.getElementById('refresh-type').value;
+                const clearCache = document.getElementById('clear-cache').value;
+                alert(`正在刷新${type}，${clearCache === 'yes' ? '已清除缓存' : '保留缓存'}`);
+            });
+        }
+        
+        // 生成报告
+        function generateReport() {
+            showModal('生成报告', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>报告类型：</span>
+                        <select class="setting-select" id="report-type">
+                            <option value="daily">日报</option>
+                            <option value="weekly">周报</option>
+                            <option value="monthly">月报</option>
+                            <option value="custom">自定义报告</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>报告内容：</span>
+                        <select class="setting-select" id="report-content">
+                            <option value="summary">数据摘要</option>
+                            <option value="detailed">详细分析</option>
+                            <option value="comparison">对比分析</option>
+                            <option value="trend">趋势分析</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>输出格式：</span>
+                        <select class="setting-select" id="report-format">
+                            <option value="pdf">PDF</option>
+                            <option value="word">Word</option>
+                            <option value="ppt">PowerPoint</option>
+                            <option value="html">HTML</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const type = document.getElementById('report-type').value;
+                const content = document.getElementById('report-content').value;
+                const format = document.getElementById('report-format').value;
+                alert(`正在生成${type}，内容：${content}，格式：${format}`);
+            });
+        }
+        
+        // 账号管理功能
+        function addAccount() {
+            showModal('添加账号', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>账号名称：</span>
+                        <input type="text" class="setting-input" id="account-name" placeholder="请输入账号名称">
+                    </div>
+                    <div class="setting-item">
+                        <span>业务单元：</span>
+                        <select class="setting-select" id="account-unit">
+                            <option value="理财">理财</option>
+                            <option value="投资">投资</option>
+                            <option value="金融">金融</option>
+                            <option value="保险">保险</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>负责人：</span>
+                        <input type="text" class="setting-input" id="account-manager" placeholder="请输入负责人姓名">
+                    </div>
+                    <div class="setting-item">
+                        <span>账号类型：</span>
+                        <select class="setting-select" id="account-type">
+                            <option value="personal">个人账号</option>
+                            <option value="enterprise">企业账号</option>
+                            <option value="media">媒体账号</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const name = document.getElementById('account-name').value;
+                const unit = document.getElementById('account-unit').value;
+                const manager = document.getElementById('account-manager').value;
+                const type = document.getElementById('account-type').value;
+                if (name && manager) {
+                    alert(`已添加账号：${name}，业务单元：${unit}，负责人：${manager}，类型：${type}`);
+                } else {
+                    alert('请填写完整信息');
+                }
+            });
+        }
+        
+        function syncAccounts() {
+            showModal('同步账号', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>同步范围：</span>
+                        <select class="setting-select" id="sync-scope">
+                            <option value="all">全部账号</option>
+                            <option value="active">活跃账号</option>
+                            <option value="selected">选中账号</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>同步内容：</span>
+                        <select class="setting-select" id="sync-content">
+                            <option value="basic">基础信息</option>
+                            <option value="data">数据统计</option>
+                            <option value="all">全部内容</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const scope = document.getElementById('sync-scope').value;
+                const content = document.getElementById('sync-content').value;
+                alert(`正在同步${scope}的${content}...`);
+            });
+        }
+        
+        // 团队配置功能
+        function saveTeamSettings() {
+            showModal('团队配置', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>添加成员：</span>
+                        <input type="email" class="setting-input" id="member-email" placeholder="请输入邮箱地址">
+                    </div>
+                    <div class="setting-item">
+                        <span>权限级别：</span>
+                        <select class="setting-select" id="member-role">
+                            <option value="viewer">查看者</option>
+                            <option value="editor">编辑者</option>
+                            <option value="admin">管理员</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>所属部门：</span>
+                        <select class="setting-select" id="member-department">
+                            <option value="华东事业部">华东事业部</option>
+                            <option value="华南事业部">华南事业部</option>
+                            <option value="华北事业部">华北事业部</option>
+                            <option value="华中事业部">华中事业部</option>
+                            <option value="西南事业部">西南事业部</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const email = document.getElementById('member-email').value;
+                const role = document.getElementById('member-role').value;
+                const department = document.getElementById('member-department').value;
+                if (email) {
+                    alert(`已邀请 ${email} 加入${department}，权限：${role}`);
+                } else {
+                    alert('请输入有效邮箱地址');
+                }
+            });
+        }
+        
+        function manageDepartments() {
+            showModal('部门管理', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>部门名称：</span>
+                        <input type="text" class="setting-input" id="dept-name" placeholder="请输入部门名称">
+                    </div>
+                    <div class="setting-item">
+                        <span>部门负责人：</span>
+                        <input type="text" class="setting-input" id="dept-manager" placeholder="请输入负责人姓名">
+                    </div>
+                    <div class="setting-item">
+                        <span>部门描述：</span>
+                        <input type="text" class="setting-input" id="dept-desc" placeholder="请输入部门描述">
+                    </div>
+                </div>
+            `, () => {
+                const name = document.getElementById('dept-name').value;
+                const manager = document.getElementById('dept-manager').value;
+                const desc = document.getElementById('dept-desc').value;
+                if (name && manager) {
+                    alert(`已创建部门：${name}，负责人：${manager}`);
+                } else {
+                    alert('请填写完整信息');
+                }
+            });
+        }
+        
+        // API配置功能
+        function configureAPI() {
+            showModal('API配置', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>API密钥：</span>
+                        <input type="password" class="setting-input" id="api-key" placeholder="请输入API密钥">
+                    </div>
+                    <div class="setting-item">
+                        <span>接口地址：</span>
+                        <input type="url" class="setting-input" id="api-url" placeholder="https://api.example.com">
+                    </div>
+                    <div class="setting-item">
+                        <span>超时时间(秒)：</span>
+                        <input type="number" class="setting-input" id="api-timeout" value="30" min="5" max="300">
+                    </div>
+                    <div class="setting-item">
+                        <span>重试次数：</span>
+                        <input type="number" class="setting-input" id="api-retry" value="3" min="1" max="10">
+                    </div>
+                </div>
+            `, () => {
+                const key = document.getElementById('api-key').value;
+                const url = document.getElementById('api-url').value;
+                const timeout = document.getElementById('api-timeout').value;
+                const retry = document.getElementById('api-retry').value;
+                if (key && url) {
+                    alert(`API配置已保存，超时时间：${timeout}秒，重试次数：${retry}次`);
+                } else {
+                    alert('请填写完整的API信息');
+                }
+            });
+        }
+        
+        function testConnection() {
+            showModal('连接测试', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>测试状态：</span>
+                        <span class="status-indicator status-online">● 连接成功</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>响应时间：</span>
+                        <span class="setting-value">156ms</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>API版本：</span>
+                        <span class="setting-value">v2.1.0</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>最后测试：</span>
+                        <span class="setting-value">${new Date().toLocaleString()}</span>
+                    </div>
+                </div>
+            `);
+        }
+        
+        // 数据备份功能
+        function backupData() {
+            showModal('数据备份', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>备份范围：</span>
+                        <select class="setting-select" id="backup-scope">
+                            <option value="all">全部数据</option>
+                            <option value="accounts">仅账号数据</option>
+                            <option value="videos">仅视频数据</option>
+                            <option value="settings">仅设置数据</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>备份格式：</span>
+                        <select class="setting-select" id="backup-format">
+                            <option value="json">JSON格式</option>
+                            <option value="sql">SQL格式</option>
+                            <option value="csv">CSV格式</option>
+                            <option value="zip">压缩包</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>备份位置：</span>
+                        <select class="setting-select" id="backup-location">
+                            <option value="local">本地存储</option>
+                            <option value="cloud">云端存储</option>
+                            <option value="ftp">FTP服务器</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const scope = document.getElementById('backup-scope').value;
+                const format = document.getElementById('backup-format').value;
+                const location = document.getElementById('backup-location').value;
+                alert(`正在备份${scope}为${format}格式到${location}...`);
+            });
+        }
+        
+        function restoreData() {
+            showModal('数据恢复', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span style="color: var(--accent-red);">⚠️ 数据恢复将覆盖现有数据</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>选择备份文件：</span>
+                        <input type="file" class="setting-input" id="restore-file" accept=".json,.sql,.csv,.zip">
+                    </div>
+                    <div class="setting-item">
+                        <span>恢复选项：</span>
+                        <select class="setting-select" id="restore-option">
+                            <option value="merge">合并数据</option>
+                            <option value="replace">完全替换</option>
+                            <option value="selective">选择性恢复</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const file = document.getElementById('restore-file').files[0];
+                const option = document.getElementById('restore-option').value;
+                if (file) {
+                    alert(`正在恢复数据文件：${file.name}，模式：${option}`);
+                } else {
+                    alert('请选择备份文件');
+                }
+            });
+        }
+        
+        // 权限管理功能
+        function managePermissions() {
+            showModal('权限管理', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>用户角色：</span>
+                        <select class="setting-select" id="user-role">
+                            <option value="admin">管理员</option>
+                            <option value="editor">编辑者</option>
+                            <option value="viewer">查看者</option>
+                            <option value="analyst">分析师</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>数据访问权限：</span>
+                        <select class="setting-select" id="data-permission">
+                            <option value="all">全部数据</option>
+                            <option value="own">仅自己的数据</option>
+                            <option value="team">团队数据</option>
+                            <option value="department">部门数据</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>功能权限：</span>
+                        <select class="setting-select" id="function-permission">
+                            <option value="full">完整功能</option>
+                            <option value="limited">受限功能</option>
+                            <option value="readonly">只读模式</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const role = document.getElementById('user-role').value;
+                const dataPermission = document.getElementById('data-permission').value;
+                const functionPermission = document.getElementById('function-permission').value;
+                alert(`权限设置已更新：角色-${role}，数据权限-${dataPermission}，功能权限-${functionPermission}`);
+            });
+        }
+        
+        function addUser() {
+            showModal('添加用户', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>用户名：</span>
+                        <input type="text" class="setting-input" id="username" placeholder="请输入用户名">
+                    </div>
+                    <div class="setting-item">
+                        <span>邮箱：</span>
+                        <input type="email" class="setting-input" id="user-email" placeholder="请输入邮箱地址">
+                    </div>
+                    <div class="setting-item">
+                        <span>初始密码：</span>
+                        <input type="password" class="setting-input" id="user-password" placeholder="请输入初始密码">
+                    </div>
+                    <div class="setting-item">
+                        <span>用户角色：</span>
+                        <select class="setting-select" id="new-user-role">
+                            <option value="viewer">查看者</option>
+                            <option value="editor">编辑者</option>
+                            <option value="admin">管理员</option>
+                        </select>
+                    </div>
+                </div>
+            `, () => {
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('user-email').value;
+                const password = document.getElementById('user-password').value;
+                const role = document.getElementById('new-user-role').value;
+                if (username && email && password) {
+                    alert(`已添加用户：${username}，邮箱：${email}，角色：${role}`);
+                } else {
+                    alert('请填写完整信息');
+                }
+            });
+        }
+        
+        // 系统监控功能
+        function viewLogs() {
+            showModal('系统日志', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>日志级别：</span>
+                        <select class="setting-select" id="log-level">
+                            <option value="all">全部</option>
+                            <option value="error">错误</option>
+                            <option value="warning">警告</option>
+                            <option value="info">信息</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>时间范围：</span>
+                        <select class="setting-select" id="log-time">
+                            <option value="1hour">最近1小时</option>
+                            <option value="24hour">最近24小时</option>
+                            <option value="7day">最近7天</option>
+                            <option value="30day">最近30天</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>最新日志：</span>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+                            [${new Date().toLocaleString()}] INFO: 数据同步完成<br>
+                            [${new Date(Date.now() - 300000).toLocaleString()}] INFO: 用户登录成功<br>
+                            [${new Date(Date.now() - 600000).toLocaleString()}] WARNING: API响应缓慢
+                        </div>
+                    </div>
+                </div>
+            `, () => {
+                const level = document.getElementById('log-level').value;
+                const time = document.getElementById('log-time').value;
+                alert(`正在查看${time}的${level}级别日志`);
+            });
+        }
+        
+        function systemDiagnosis() {
+            showModal('系统诊断', `
+                <div class="setting-options">
+                    <div class="setting-item">
+                        <span>系统状态：</span>
+                        <span class="status-indicator status-online">● 正常运行</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>CPU使用率：</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 23%;"></div>
+                        </div>
+                        <span style="font-size: 0.8rem;">23%</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>内存使用率：</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%;"></div>
+                        </div>
+                        <span style="font-size: 0.8rem;">1.2GB/4GB (30%)</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>磁盘使用率：</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%;"></div>
+                        </div>
+                        <span style="font-size: 0.8rem;">45GB/100GB (45%)</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>网络状态：</span>
+                        <span class="status-indicator status-online">● 连接正常</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>数据库状态：</span>
+                        <span class="status-indicator status-online">● 连接正常</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>最后检查：</span>
+                        <span style="font-size: 0.8rem;">${new Date().toLocaleString()}</span>
+                    </div>
+                </div>
+            `);
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认显示核心数据仪表盘
+            document.getElementById('dashboard').classList.add('active');
+            document.querySelector('.nav-item').classList.add('active');
+            
+            // 初始化图表
+            initCharts();
+        });
+        
+        // 初始化ECharts图表
+        function initCharts() {
+            // 检查ECharts是否加载成功
+            if (typeof echarts === 'undefined') {
+                console.error('ECharts library not loaded');
+                return;
+            }
+            
+            // 检查图表容器是否存在
+            const playTrendElement = document.getElementById('playTrendChart');
+            const postTrendElement = document.getElementById('postTrendChart');
+            
+            if (!playTrendElement || !postTrendElement) {
+                console.error('Chart containers not found');
+                return;
+            }
+            
+            // 播放量趋势图表
+            const playTrendChart = echarts.init(playTrendElement);
+            const playTrendOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    borderColor: '#e0e0e0',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                legend: {
+                    data: ['当前期间', '上期', '基准线'],
+                    top: 10,
+                    textStyle: {
+                        color: '#666'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    axisLine: {
+                        lineStyle: {
+                            color: '#e0e0e0'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#666'
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: {
+                        lineStyle: {
+                            color: '#e0e0e0'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#666',
+                        formatter: function(value) {
+                            if (value >= 1000000) {
+                                return (value / 1000000).toFixed(1) + 'M';
+                            } else if (value >= 1000) {
+                                return (value / 1000).toFixed(1) + 'K';
+                            }
+                            return value;
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: '#f0f0f0'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: '当前期间',
+                        type: 'line',
+                        smooth: true,
+                        data: [1200000, 1320000, 1010000, 1340000, 1900000, 2300000, 2100000, 2400000, 2200000, 2600000, 2800000, 3200000],
+                        lineStyle: {
+                            color: '#4CAF50',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#4CAF50'
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(76, 175, 80, 0.3)' },
+                                { offset: 1, color: 'rgba(76, 175, 80, 0.05)' }
+                            ])
+                        }
+                    },
+                    {
+                        name: '上期',
+                        type: 'line',
+                        smooth: true,
+                        data: [1000000, 1100000, 900000, 1200000, 1600000, 2000000, 1800000, 2100000, 1900000, 2200000, 2400000, 2700000],
+                        lineStyle: {
+                            color: '#FF9800',
+                            width: 2
+                        },
+                        itemStyle: {
+                            color: '#FF9800'
+                        }
+                    },
+                    {
+                        name: '基准线',
+                        type: 'line',
+                        data: [1500000, 1500000, 1500000, 1500000, 1500000, 1500000, 1500000, 1500000, 1500000, 1500000, 1500000, 1500000],
+                        lineStyle: {
+                            color: '#f44336',
+                            width: 2,
+                            type: 'dashed'
+                        },
+                        itemStyle: {
+                            color: '#f44336'
+                        },
+                        symbol: 'none'
+                    }
+                ]
+            };
+            playTrendChart.setOption(playTrendOption);
+            
+            // 发表量趋势图表
+            const postTrendChart = echarts.init(postTrendElement);
+            const postTrendOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    borderColor: '#e0e0e0',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    axisLine: {
+                        lineStyle: {
+                            color: '#e0e0e0'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#666'
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: {
+                        lineStyle: {
+                            color: '#e0e0e0'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#666'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: '#f0f0f0'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: '发表量',
+                        type: 'line',
+                        smooth: true,
+                        data: [45, 52, 38, 67, 89, 123, 98, 145, 167, 189, 234, 278],
+                        lineStyle: {
+                            color: '#2196F3',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#2196F3'
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(33, 150, 243, 0.4)' },
+                                { offset: 0.5, color: 'rgba(33, 150, 243, 0.2)' },
+                                { offset: 1, color: 'rgba(33, 150, 243, 0.05)' }
+                            ])
+                        }
+                    }
+                ]
+            };
+            postTrendChart.setOption(postTrendOption);
+            
+            // 响应式处理
+            window.addEventListener('resize', function() {
+                playTrendChart.resize();
+                postTrendChart.resize();
+            });
+        }
+        
+        // 模拟实时数据更新
+        setInterval(() => {
+            const values = document.querySelectorAll('.metric-value');
+            values.forEach(value => {
+                if (Math.random() > 0.8) {
+                    value.style.animation = 'pulse 0.5s ease-in-out';
+                    setTimeout(() => {
+                        value.style.animation = '';
+                    }, 500);
+                }
+            });
+        }, 3000);
+    </script>
+    
+    <style>
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+        }
+        
+        .rank-info {
+            flex: 1;
+        }
+        
+        .rank-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+        }
+        
+        .rank-team {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        .rank-value {
+            font-weight: 600;
+            color: var(--accent-green);
+            font-size: 0.85rem;
+        }
+    </style>
+</body>
+</html>
